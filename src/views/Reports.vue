@@ -21,49 +21,16 @@
 
 <script>
 import Swal from 'sweetalert2'
+import { mapState } from 'vuex';
 const tableCoponent = () => import('@/components/tableComponent/tableComponent')
 
 export default {
   name: 'Reports',
   components: {tableCoponent},
-  data () {
-    return {
-      headers: [
-        {
-          name: 'name',
-          title: 'Название'
-        },
-        {
-          name: 'status',
-          title: 'Статус'
-        },
-        {
-          name: 'author',
-          title: 'Автор'
-        },
-        {
-          name: 'time',
-          title: 'Время прохождения'
-        },
-      ],
-      records: [
-        {
-          id: 1,
-          name: 'Resport1',
-          status: false,
-          author: 'Author1',
-          time: '2013-03-01T01:10:00'
-        },
-        {
-          id: 2,
-          name: 'Resport2',
-          status: true,
-          author: 'Author2',
-          time: '2013-03-01T01:10:00'
-        }
-      ]
-    }
-  },
+  computed: mapState({
+    headers: state => state.headers,
+    records: state => state.records,
+  }),
   methods: {
     async approveReport(id) {
       const { isConfirmed } = await Swal.fire({
@@ -75,8 +42,7 @@ export default {
         cancelButtonText: 'No, cancel!',
       })
       if(!isConfirmed) return
-      const report = this.records.find(item=> item.id === id)
-      report.status = true
+      this.$store.dispatch('approve', id)
     },
     async deleteReport(id) {
       const { isConfirmed } = await Swal.fire({
@@ -88,7 +54,7 @@ export default {
         cancelButtonText: 'No, cancel!',
       })
       if(!isConfirmed) return
-      this.records = this.records.filter(item => item.id !== id)
+      this.$store.dispatch('delete', id)
     }
   }
 }

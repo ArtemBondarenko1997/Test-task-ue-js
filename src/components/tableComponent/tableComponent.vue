@@ -17,16 +17,6 @@
 
             <td>
               <slot name="actions" :item="record"></slot>
-
-<!--              <router-link tag="button" :to="`/report/${record.id}`">-->
-<!--                Редактировать-->
-<!--              </router-link>-->
-<!--              <button>-->
-<!--                Принять-->
-<!--              </button>-->
-<!--              <button>-->
-<!--                Удалить-->
-<!--              </button>-->
             </td>
           </tr>
         </tbody>

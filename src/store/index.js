@@ -47,7 +47,7 @@ export default new Vuex.Store({
     'EDIT': (state, payload) => {
       const record = state.records.find(item => item.id === payload.id)
       for(let key in payload.value) {
-        record[key] = payload.value[key]
+        record[key] = payload[key]
       }
     }
   },

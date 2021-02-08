@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="reports">
     <router-link tag="button" :to="`/report`">
       Создать
     </router-link>
@@ -59,3 +59,25 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.reports {
+  padding: 20px;
+  button {
+    cursor: pointer;
+    margin: 0 10px;
+    padding: 5px;
+    background: linear-gradient(199.16deg, #202225 0.24%, #2A2C30 89.94%);
+    box-shadow: 5px 5px 10px #2B2E32;
+    -webkit-backdrop-filter: blur(13px);
+    backdrop-filter: blur(13px);
+    font-size: 18px;
+    line-height: 21px;
+    color: #FFFFFF;
+    border: none;
+    z-index: 2;
+    outline: none;
+  }
+}
+
+</style>

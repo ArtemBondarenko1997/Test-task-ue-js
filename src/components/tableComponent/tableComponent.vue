@@ -1,12 +1,13 @@
 <template>
   <div class="wrap">
     <div class="tableFixHead">
-      <table>
+      <table cellspacing="0">
           <thead>
           <tr>
             <th v-for="header in headers" :key="header.title">
               {{ header.title }}
             </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -42,6 +43,66 @@ props: {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.wrap {
+  overflow: auto;
+  max-width: 50%;
+  margin: 20px auto;
 
+  &::-webkit-scrollbar {
+    width: 1px;
+    position: absolute;
+    z-index: 2;
+    right: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 1px;
+    background: linear-gradient(180deg, #9BEDFF 0%, #88C5EE 63.54%, #6C8CD5 100%);
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-track {
+    width: 1px;
+  }
+
+  .tableFixHead {
+    height: 700px;
+    position: relative;
+    padding-bottom: 40px;
+    z-index: 3;
+    width: auto;
+    thead {
+      border-bottom: 1px solid rgb(75, 78, 82);
+    }
+  }
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+
+  tr {
+    position: relative;
+    background: #34373C;
+    color: #fff;
+
+    th, td {
+      padding: 10px;
+      background-color: #282a2f;
+    }
+
+    th {
+      transition: box-shadow .6s linear;
+      font-weight: 500;
+      &:hover {
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
+      }
+    }
+  }
+}
 </style>

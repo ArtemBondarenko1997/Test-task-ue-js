@@ -1,10 +1,11 @@
 <template>
   <div class="report">
-    <div v-for="header in headers" :key="header.name">
-      {{ header.title }}: <input type="text" v-model="record[header.name]">
+    <div v-for="header in headers" :key="header.name" class="fieldRow">
+      <div class="title">{{ header.title }}:</div>
+      <input type="text" v-model="record[header.name]">
     </div>
     <div class="buttonsBlock">
-      <button>{{ isNew ? 'Создать курс' : 'Сохранить изменения' }}</button>
+      <button @click="mainAction">{{ isNew ? 'Создать курс' : 'Сохранить изменения' }}</button>
       <button @click="cancel">Отменить редактирование</button>
       <button v-if="!isNew" @click="deleteReport">Удалить</button>
     </div>
@@ -31,6 +32,14 @@ export default {
     }
   },
   methods: {
+    mainAction() {
+      if(this.isNew) {
+        this.$store.dispatch('create', this.record)
+      } else {
+        this.$store.dispatch('edit', this.record)
+      }
+      this.$router.push('/')
+    },
     async deleteReport() {
       const { isConfirmed } = await Swal.fire({
         title: 'Are you sure?',
@@ -62,3 +71,52 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.report {
+  padding: 20px;
+  color: #fff;
+  .fieldRow {
+    margin: 20px auto;
+    display: flex;
+    max-width: 50%;
+    justify-content: space-between;
+    align-items: center;
+    .title {
+      width: 30%;
+      text-align: left;
+    }
+    input {
+      width: 70%;
+      margin: auto;
+      padding: 12px;
+      border: 2px solid transparent;
+      color: #fff;
+      display: block;
+      background: #303339;
+      &:focus{
+        border: 2px solid #1976d2;
+        outline: none;
+      }
+      &::placeholder{
+        color: #4F555C;
+      }
+    }
+  }
+  button {
+    cursor: pointer;
+    margin: 0 10px;
+    padding: 5px;
+    background: linear-gradient(199.16deg, #202225 0.24%, #2A2C30 89.94%);
+    box-shadow: 5px 5px 10px #2B2E32;
+    -webkit-backdrop-filter: blur(13px);
+    backdrop-filter: blur(13px);
+    font-size: 18px;
+    line-height: 21px;
+    color: #FFFFFF;
+    border: none;
+    z-index: 2;
+    outline: none;
+  }
+}
+</style>

@@ -1,11 +1,15 @@
 <template>
   <div class="wrap">
-    <div class="tableFixHead">
+    <div>
       <table cellspacing="0">
           <thead>
           <tr>
             <th v-for="header in headers" :key="header.title">
               {{ header.title }}
+              <div class="sortZone" @click="sorting(header.name)">
+                <img v-if="sort.field !== header.name || !sort.desc" src="@/assets/images/arrow.svg" alt="sort">
+                <img v-if="sort.field !== header.name || sort.desc" style="transform: rotate(180deg)" src="@/assets/images/arrow.svg" alt="sort">
+              </div>
             </th>
             <th></th>
           </tr>
@@ -13,7 +17,8 @@
         <tbody>
           <tr v-for="record in records" :key="record.id">
             <td v-for="header in headers" :key="header.name">
-              {{ record[header.name] }}
+              <span v-if="header.type === 'time'">{{ record[header.name].HH }} : {{ record[header.name].mm }}</span>
+              <span v-else>{{ record[header.name] }}</span>
             </td>
 
             <td>
@@ -38,6 +43,25 @@ props: {
   records: {
     type: Array,
     required: false,
+  },
+  sort: {
+    type: Object,
+    required: false,
+  }
+},
+methods: {
+  sorting (name) {
+    if (this.sort.field !== name || this.sort.desc) {
+      this.$emit('sort', {
+        field: name,
+        desc: false
+      })
+      return
+    }
+    this.$emit('sort', {
+      field: name,
+      desc: true
+    })
   }
 }
 }
@@ -69,8 +93,7 @@ props: {
     width: 1px;
   }
 
-  .tableFixHead {
-    height: 700px;
+  > div {
     position: relative;
     padding-bottom: 40px;
     z-index: 3;
@@ -92,17 +115,47 @@ props: {
     color: #fff;
 
     th, td {
-      padding: 10px;
       background-color: #282a2f;
     }
-
+    td {
+      padding: 10px;
+    }
     th {
       transition: box-shadow .6s linear;
       font-weight: 500;
+      padding-top: 10px;
+      padding-bottom: 0;
       &:hover {
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
       }
+      .sortZone {
+        user-select: none;
+        cursor: pointer;
+        margin: auto;
+        margin-top: 10px;
+        padding-top: 3px;
+        width: 100px;
+        background: #303339;
+        border-radius: 5px 5px 0px 0px;
+        height: 20px;
+      }
     }
+  }
+}
+
+@media all and (max-width: 1920px) and (min-width: 1180px){
+  .wrap {
+    max-width: 75%;
+  }
+}
+@media all and (max-width: 1180px) and (min-width: 990px){
+  .wrap {
+    max-width: 90%;
+  }
+}
+@media all and (max-width: 990px){
+  .wrap {
+    max-width: 100%;
   }
 }
 </style>

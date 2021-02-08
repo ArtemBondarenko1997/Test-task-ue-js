@@ -3,7 +3,7 @@
     <router-link tag="button" :to="`/report`">
       Создать
     </router-link>
-    <table-coponent :headers="headers" :records="records">
+    <table-coponent :headers="headers" :records="records" :sort="sort" @sort="sorting">
       <template v-slot:actions="{ item }">
         <router-link tag="button" :to="`/report/${item.id}`">
           Редактировать
@@ -16,45 +16,47 @@
         </button>
       </template>
     </table-coponent>
+    <div class="paginationWrap">
+      <img v-if="pages > 1" style="transform: rotate(180deg)" src="@/assets/images/paginationArrow.svg" alt="back" @click="setPage(page-1)">
+      <div :class="{active: page===i}" class="page" v-for="i in pages" :key="i" @click="setPage(i)"> {{i}} </div>
+      <img v-if="page !== pages && pages > 0" src="@/assets/images/paginationArrow.svg" alt="next" @click="setPage(page+1)">
+    </div>
   </div>
 </template>
 
 <script>
-import Swal from 'sweetalert2'
 import { mapState } from 'vuex';
 const tableCoponent = () => import('@/components/tableComponent/tableComponent')
 
 export default {
   name: 'Reports',
   components: {tableCoponent},
-  computed: mapState({
-    headers: state => state.headers,
-    records: state => state.records,
+  computed: { ...mapState({
+    headers: state => state.reports.headers,
+    sort: state => state.reports.sort,
+    page: state => state.reports.paginate.page
   }),
+    records() {
+      return this.$store.getters.getRecords
+    },
+    pages() {
+      return this.$store.getters.pages
+    }
+  },
   methods: {
     async approveReport(id) {
-      const { isConfirmed } = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to delete approve?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, approve it!',
-        cancelButtonText: 'No, cancel!',
-      })
-      if(!isConfirmed) return
+      if(!await this.showNote('Do you want to approve report?')) return
       this.$store.dispatch('approve', id)
     },
     async deleteReport(id) {
-      const { isConfirmed } = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to delete report?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
-      })
-      if(!isConfirmed) return
+      if(!await this.showNote('Do you want to delete report?')) return
       this.$store.dispatch('delete', id)
+    },
+    sorting (payload) {
+      this.$store.dispatch('setSort', payload)
+    },
+    setPage (page) {
+      this.$store.dispatch('setPage', page)
     }
   }
 }
@@ -77,6 +79,34 @@ export default {
     border: none;
     z-index: 2;
     outline: none;
+  }
+  .paginationWrap{
+    display: flex;
+    justify-content: space-around;
+    max-width: 50%;
+    margin: auto;
+    .page {
+      cursor: pointer;
+      color: #fff;
+      transition: font-size .5s ease;
+      &.active{
+        font-weight: 600;
+        font-size: 18px;
+      }
+    }
+    .img{
+      cursor: pointer;
+    }
+  }
+}
+
+@media all and (max-width: 990px){
+  .reports {
+    padding: 20px 0;
+    button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
   }
 }
 

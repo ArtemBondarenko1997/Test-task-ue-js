@@ -20,5 +20,11 @@ yarn build
 yarn lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### For fast start run ne comands in the root
+```
+yarn install
+yarn build
+npm install http-server -g
+http-server dist/
+```
+

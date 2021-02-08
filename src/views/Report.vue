@@ -1,22 +1,37 @@
 <template>
   <div class="report">
-    <div v-for="header in headers" :key="header.name" class="fieldRow">
-      <div class="title">{{ header.title }}:</div>
-      <input type="text" v-model="record[header.name]">
+    <div class="fieldRow">
+      <div class="title"> Название: </div>
+      <input type="text" v-model="record.name">
+    </div>
+    <div class="fieldRow">
+      <div class="title"> Статус: </div>
+      <div class="text"> {{ record.status ? 'Принят' : 'Не принят' }} </div>
+    </div>
+    <div class="fieldRow">
+      <div class="title"> Автор: </div>
+      <input v-if="isNew" type="text" v-model="record.author">
+      <div v-else class="text"> {{ record.author }} </div>
+    </div>
+    <div class="fieldRow">
+      <div class="title"> Время прохождения: </div>
+      <vue-timepicker v-model="record.time" class="date"></vue-timepicker>
     </div>
     <div class="buttonsBlock">
       <button @click="mainAction">{{ isNew ? 'Создать курс' : 'Сохранить изменения' }}</button>
-      <button @click="cancel">Отменить редактирование</button>
+      <button @click="cancel">Отменить {{ isNew ? 'создание' : 'редактирование' }}</button>
+      <button v-if="!isNew && !record.status" @click="approveReport">Принять</button>
       <button v-if="!isNew" @click="deleteReport">Удалить</button>
     </div>
   </div>
 </template>
 
 <script>
-import Swal from "sweetalert2";
+import VueTimepicker from 'vue2-timepicker'
 
 export default {
   name: 'Report',
+  components: { VueTimepicker },
   computed: {
     isNew () {
       return !this.$route.params.id
@@ -26,9 +41,6 @@ export default {
         return {}
       }
       return this.$store.getters.getReportById(this.$route.params.id)
-    },
-    headers () {
-      return this.$store.state.headers
     }
   },
   methods: {
@@ -41,28 +53,17 @@ export default {
       this.$router.push('/')
     },
     async deleteReport() {
-      const { isConfirmed } = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Do you want to delete report?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
-      })
-      if(!isConfirmed) return
+      if(!await this.showNote('Do you want to delete report?')) return
       await this.$store.dispatch('delete', this.$route.params.id)
       this.$router.push('/')
     },
+    async approveReport() {
+      if(!await this.showNote('Do you want to approve report?')) return
+      this.$store.dispatch('approve', +this.$route.params.id)
+      this.$router.push('/')
+    },
     async cancel () {
-      const { isConfirmed } = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Вы уверены что хотите вернутся? Ваши изменения не сохранятся!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
-      })
-      if(!isConfirmed) return
+      if(!await this.showNote('Do you want to exit?')) return
       this.$router.push('/')
     },
     create () {
@@ -72,6 +73,7 @@ export default {
 }
 </script>
 
+<style src="vue2-timepicker/dist/VueTimepicker.css"></style>
 <style scoped lang="scss">
 .report {
   padding: 20px;
@@ -85,6 +87,14 @@ export default {
     .title {
       width: 30%;
       text-align: left;
+    }
+    .text {
+      width: 70%;
+      text-align: left
+    }
+    .date {
+      width: 70%;
+      margin: auto;
     }
     input {
       width: 70%;
@@ -117,6 +127,28 @@ export default {
     border: none;
     z-index: 2;
     outline: none;
+  }
+}
+
+@media all and (max-width: 1920px) and (min-width: 768px){
+  .fieldRow {
+    max-width: 75%!important;
+  }
+}
+
+@media all and (max-width: 768px){
+  .fieldRow {
+    max-width: 100%!important;
+    input, .text {
+      width: 40%!important;
+    }
+    .date {
+      width: 40%;
+    }
+  }
+  button {
+    width: 100%;
+    margin-bottom: 10px!important;
   }
 }
 </style>
